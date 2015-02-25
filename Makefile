@@ -8,4 +8,4 @@ docker:
 
 cloud9:
 	sudo chmod +x setup.sh
-	sudo setup.sh
+	sudo ./setup.sh
