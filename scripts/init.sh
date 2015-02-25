@@ -74,7 +74,10 @@ echo "createdb successful"
 
 # ==================================
 echo "executing commands from prepare.sql"
+cp R /tmp
+cp S /tmp
 psql -d $DBNAME -f prepare.sql
+rm -f /tmp/R /tmp/s
 if [ "$?" != "0" ]
 then
   echo "error when executing psql $DBNAME -f prepare.sql"
