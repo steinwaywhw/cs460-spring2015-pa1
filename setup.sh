@@ -21,6 +21,6 @@ chown -R postgres /var/lib/postgresql
 chown -R postgres ./scripts 
 
 cd ./scripts 
-su postgres -c ./init.sh 
-su postgres -c ./query.sh
+sudo su postgres -c ./init.sh 
+sudo su postgres -c ./query.sh
 cd ..
