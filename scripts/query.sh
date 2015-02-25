@@ -15,6 +15,8 @@ source env.sh
 
 echo 'Starting your postgres server and executing queries in query.sql'
 
+mkdir -p ../output
+
 # From http://www.postgresql.org/docs/9.4/static/app-postgres.html
 # 
 # -f { s | i | o | b | t | n | m | h }
@@ -34,7 +36,7 @@ echo 'Starting your postgres server and executing queries in query.sql'
 #PGOPTIONS='-c log_parser_stats=yes -c log_planner_stats=yes -c log_executor_stats=yes'
 #PGOPTIONS='-c log_statement_stats=yes'
 #PGOPTIONS='-c log_executor_stats=yes'
-postgres --single -B $NBUFFERS $PGOPTIONS -E -d 1 -fm -fh -te $DBNAME > query_results.log 2> query_stats.log < query.sql
+postgres --single -B $NBUFFERS $PGOPTIONS -E -d 1 -fm -fh -te $DBNAME > ../output/query_results.log 2> ../output/query_stats.log < query.sql
 
 echo 'Query execution successful'
 echo
