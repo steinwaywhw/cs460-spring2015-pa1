@@ -31,7 +31,7 @@ testclock:
 
 setup:
 	export SRCDIR=$PWD/postgresql
-	sudo chmod go+x scripts/*.sh
+	chmod a+x scripts/*.sh
 	./scripts/download.sh
 	./scripts/compile.sh
 
