@@ -19,6 +19,7 @@ then
 	exit 1 
 fi
 
+sudo rm -rf $PGDATA
 sudo su postgres -c ./init.sh 
 sudo su postgres -c ./query.sh
 
