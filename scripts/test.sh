@@ -28,4 +28,4 @@ sudo su postgres -c ./query.sh
 cp /tmp/query_results.log $2/result.$1.$(date +%T).log
 cp /tmp/query_stats.log   $2/stats.$1.$(date  +%T).log
 
-pg_ctl_stop
+pg_ctl stop
