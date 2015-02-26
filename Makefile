@@ -22,11 +22,13 @@ cloud9test:
 
 testclock:
 	export DBNAME=testdb
-	cp ./policy/freelist.clock.c 		./postgresql/src/backend/storage/buffer/freelist.c 
-	cp ./policy/bufmgr.clock.c 			./postgresql/src/backend/storage/buffer/bufmgr.c 
-	cp ./policy/buf_internals.clock.h 	./postgresql/src/include/storage/buf_internals.h 
+	export SRCDIR=$(PWD)/postgresql
 
-	cd ./postgresql && make -j8 && make install
+	cp ./policy/freelist.clock.c      ./postgresql/src/backend/storage/buffer/freelist.c
+	cp ./policy/bufmgr.clock.c        ./postgresql/src/backend/storage/buffer/bufmgr.c
+	cp ./policy/buf_internals.clock.h ./postgresql/src/include/storage/buf_internals.h
+
+	cd $(SRCDIR) && make uninstall && make -j8 && make install
 	./scripts/test.sh clock ./output
 
 setup:
@@ -37,6 +39,6 @@ setup:
 	./scripts/compile.sh
 
 	mkdir -p policy
-	cp ./postgresql/src/backend/storage/buffer/freelist.c 	./policy/freelist.clock.c
-	cp ./postgresql/src/backend/storage/buffer/bufmgr.c 	./policy/bufmgr.clock.c
-	cp ./postgresql/src/include/storage/buf_internals.h 	./policy/buf_internals.clock.h
+	cp ./postgresql/src/backend/storage/buffer/freelist.c ./policy/freelist.clock.c
+	cp ./postgresql/src/backend/storage/buffer/bufmgr.c   ./policy/bufmgr.clock.c
+	cp ./postgresql/src/include/storage/buf_internals.h   ./policy/buf_internals.clock.h
