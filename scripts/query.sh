@@ -9,8 +9,6 @@ else
 	echo "Input number of buffers = "$NBUFFERS;
 fi
 
-DBNAME=testdb
-
 source env.sh
 
 echo 'Starting your postgres server and executing queries in query.sql'

@@ -10,7 +10,7 @@ cloud9:
 	sudo chmod +x setup.sh
 	sudo ./setup.sh
 
-cloud9test:
+cloud9test: 
 	sudo rm -rf /var/lib/postgresql/* ./output
 	mkdir -p output
 	
@@ -19,5 +19,23 @@ cloud9test:
 	sudo su postgres -c ./query.sh
 
 	cp /tmp/query_results.log /tmp/query_stats.log ./output
-	
 
+testclock:
+	export DBNAME=testdb
+	cp ./policy/freelist.clock.c 		./postgresql/src/backend/storage/buffer/freelist.c 
+	cp ./policy/bufmgr.clock.c 			./postgresql/src/backend/storage/buffer/bufmgr.c 
+	cp ./policy/buf_internals.clock.h 	./postgresql/src/include/storage/buf_internals.h 
+
+	cd ./postgresql && make -j8 && make install
+	./scripts/test.sh clock ./output
+
+setup:
+	export SRCDIR=$PWD/postgresql
+	sudo chmod go+x scripts/*.sh
+	./scripts/download.sh
+	./scripts/compile.sh
+
+	mkdir -p policy
+	cp ./postgresql/src/backend/storage/buffer/freelist.c 	./policy/freelist.clock.c
+	cp ./postgresql/src/backend/storage/buffer/bufmgr.c 	./policy/bufmgr.clock.c
+	cp ./postgresql/src/include/storage/buf_internals.h 	./policy/buf_internals.clock.h

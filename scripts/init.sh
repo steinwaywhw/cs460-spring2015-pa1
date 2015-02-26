@@ -6,7 +6,10 @@
 # Sailesh Krishnamurthy
 #
 # Modified by ashwin thangali
-# Updated by Hanwen Wu <steinwaywhw@gmail.com> 02-24-2015
+# 
+# Updated by Hanwen Wu <steinwaywhw@gmail.com> 
+# Date: 02-24-2015
+# 
 
 
 help ()
@@ -19,7 +22,6 @@ help ()
   	echo
 }
 
-DBNAME=testdb
 SEC=3
 INDEX=0
 
@@ -48,7 +50,7 @@ source env.sh
 echo "executing initdb"
 initdb 
 echo "initdb successful"
-echo "local all all trust" >> /var/lib/postgresql/data/pg_hba.conf
+# echo "local all all trust" >> /var/lib/postgresql/data/pg_hba.conf
 
 # ==================================
 echo "starting postmaster"
