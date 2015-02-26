@@ -21,7 +21,6 @@ cloud9test:
 	cp /tmp/query_results.log /tmp/query_stats.log ./output
 
 testclock:
-	source ./scripts/env.sh
 	SRCDIR=$(PWD)/postgresql
 
 	mkdir -p output
@@ -34,9 +33,8 @@ testclock:
 	cd ./scripts && ./test.sh clock $(PWD)/output
 
 setup:
-	source ./scripts/env.sh
 	SRCDIR=$(PWD)/postgresql
-	
+
 	./scripts/download.sh $(SRCDIR)
 	./scripts/compile.sh $(SRCDIR)
 

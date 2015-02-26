@@ -12,6 +12,8 @@ then
 	exit 1
 fi
 
+source ./env.sh
+
 sudo apt-get update 
 sudo apt-get install -y wget libreadline-dev zlib1g-dev bison flex gcc make
 

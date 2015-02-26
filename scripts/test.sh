@@ -20,6 +20,7 @@ then
 fi
 
 source env.sh
+
 pg_ctl stop
 sudo rm -rf $PGDATA
 sudo su postgres -c ./init.sh 
