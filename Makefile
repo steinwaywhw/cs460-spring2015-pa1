@@ -24,12 +24,14 @@ testclock:
 	export DBNAME=testdb
 	export SRCDIR=$(PWD)/postgresql
 
+	mkdir -p output
+
 	cp ./policy/freelist.clock.c      ./postgresql/src/backend/storage/buffer/freelist.c
 	cp ./policy/bufmgr.clock.c        ./postgresql/src/backend/storage/buffer/bufmgr.c
 	cp ./policy/buf_internals.clock.h ./postgresql/src/include/storage/buf_internals.h
 
 	cd $(SRCDIR) && sudo make uninstall && make -j8 && sudo make install
-	./scripts/test.sh clock ./output
+	cd ./scripts && ./test.sh clock $(PWD)/../output
 
 setup:
 	export SRCDIR=$(PWD)/postgresql
