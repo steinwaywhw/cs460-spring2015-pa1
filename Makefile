@@ -30,7 +30,8 @@ testclock:
 	./scripts/test.sh clock ./output
 
 setup:
-	export SRCDIR=$PWD/postgresql
+	export SRCDIR=$(PWD)/postgresql
+	echo "using source dir $(SRCDIR)"
 	chmod a+x scripts/*.sh
 	./scripts/download.sh
 	./scripts/compile.sh
