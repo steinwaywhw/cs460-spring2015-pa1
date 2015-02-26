@@ -28,7 +28,7 @@ testclock:
 	cp ./policy/bufmgr.clock.c        ./postgresql/src/backend/storage/buffer/bufmgr.c
 	cp ./policy/buf_internals.clock.h ./postgresql/src/include/storage/buf_internals.h
 
-	cd $(SRCDIR) && make uninstall && make -j8 && make install
+	cd $(SRCDIR) && sudo make uninstall && make -j8 && sudo make install
 	./scripts/test.sh clock ./output
 
 setup:
