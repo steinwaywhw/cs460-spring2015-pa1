@@ -35,8 +35,8 @@ testclock:
 setup:
 	SRCDIR=$(PWD)/postgresql
 
-	./scripts/download.sh $(SRCDIR)
-	./scripts/compile.sh $(SRCDIR)
+	cd scripts && ./download.sh $(SRCDIR)
+	cd scripts && ./compile.sh $(SRCDIR)
 
 	mkdir -p policy
 	cp $(SRCDIR)/src/backend/storage/buffer/freelist.c ./policy/freelist.clock.c
