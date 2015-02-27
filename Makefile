@@ -1,12 +1,10 @@
 
-
+SRCDIR = $(PWD)/postgresql
 
 all: 
 
 testclock:
-	SRCDIR=$(PWD)/postgresql
-
-	mkdir -p output
+	mkdir -p ./output
 
 	cp ./policy/freelist.clock.c      $(SRCDIR)/src/backend/storage/buffer/freelist.c
 	cp ./policy/bufmgr.clock.c        $(SRCDIR)/src/backend/storage/buffer/bufmgr.c
@@ -16,8 +14,6 @@ testclock:
 	cd ./scripts && ./test.sh clock $(PWD)/output
 
 setup:
-	SRCDIR=$(PWD)/postgresql
-
 	cd scripts && ./download.sh $(SRCDIR)
 	cd scripts && ./compile.sh $(SRCDIR)
 

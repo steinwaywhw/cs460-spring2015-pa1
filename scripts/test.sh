@@ -21,10 +21,16 @@ fi
 
 source env.sh
 
+rm -f /tmp/query_results.log /tmp/query_results.log
 sudo rm -rf $PGDATA
 sudo su postgres -c ./init.sh 
 sudo su postgres -c ./query.sh
 
-cp /tmp/query_results.log $2/result.$1.$(date +%T).log
-cp /tmp/query_stats.log   $2/stats.$1.$(date  +%T).log
+DATE=$(date +%T)
 
+cp /tmp/query_results.log $2/result.$1.$DATE.log
+cp /tmp/query_results.log $2/buffer.$1.$DATE.log
+cp /tmp/query_stats.log   $2/stats.$1.$DATE.log
+
+sed -i '/^[\[<]/d' $2/result.$1.$DATE.log
+sed -i '/^[\[<]/!d' $2/buffer.$1.$DATE.log

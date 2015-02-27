@@ -33,7 +33,7 @@ echo 'Starting your postgres server and executing queries in query.sql'
 #PGOPTIONS='-c log_statement_stats=yes'
 #PGOPTIONS='-c log_executor_stats=yes'
 postgres --single -B $NBUFFERS $PGOPTIONS -E -d 1 -fm -fh -te $DBNAME > /tmp/query_results.log 2> /tmp/query_stats.log < query.sql
-pg_ctl stop
+
 echo 'Query execution successful'
 echo 'Postgres statistics are available in "output" folder'
 
