@@ -18,6 +18,3 @@ setup:
 	cd scripts && ./compile.sh $(SRCDIR)
 
 	mkdir -p policy
-	cp $(SRCDIR)/src/backend/storage/buffer/freelist.c ./policy/freelist.clock.c
-	cp $(SRCDIR)/src/backend/storage/buffer/bufmgr.c   ./policy/bufmgr.clock.c
-	cp $(SRCDIR)/src/include/storage/buf_internals.h   ./policy/buf_internals.clock.h
