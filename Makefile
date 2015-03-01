@@ -8,7 +8,9 @@ testclock:
 
 	cp ./policy/freelist.clock.c      $(SRCDIR)/src/backend/storage/buffer/freelist.c
 	cp ./policy/bufmgr.clock.c        $(SRCDIR)/src/backend/storage/buffer/bufmgr.c
+	cp ./policy/buf_init.clock.c      $(SRCDIR)/src/backend/storage/buffer/buf_init.c
 	cp ./policy/buf_internals.clock.h $(SRCDIR)/src/include/storage/buf_internals.h
+
 
 	cd $(SRCDIR) && sudo make uninstall && make -j8 && sudo make install
 	cd ./scripts && ./test.sh clock $(PWD)/output
