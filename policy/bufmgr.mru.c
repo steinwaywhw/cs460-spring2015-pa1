@@ -1055,6 +1055,10 @@ PinBuffer(volatile BufferDesc *buf, BufferAccessStrategy strategy)
 				buf->usage_count = 1;
 		}
 		result = (buf->flags & BM_VALID) != 0;
+
+		// CS460: unlink from MRU list
+		StrategyMRUDequeue(buf);
+
 		UnlockBufHdr(buf);
 	}
 	else
@@ -1088,7 +1092,11 @@ PinBuffer_Locked(volatile BufferDesc *buf)
 	int			b = buf->buf_id;
 
 	if (PrivateRefCount[b] == 0)
+	{
 		buf->refcount++;
+		// CS460: unlink from MRU list
+		StrategyMRUDequeue(buf);
+	}
 	UnlockBufHdr(buf);
 	PrivateRefCount[b]++;
 	Assert(PrivateRefCount[b] > 0);
@@ -1126,6 +1134,11 @@ UnpinBuffer(volatile BufferDesc *buf, bool fixOwner)
 		/* Decrement the shared reference count */
 		Assert(buf->refcount > 0);
 		buf->refcount--;
+
+		// CS460: link it into MRU list
+		if (buf->refcount == 0)
+			StrategyMRUEnqueue(buf);
+
 
 		/* Support LockBufferForCleanup() */
 		if ((buf->flags & BM_PIN_COUNT_WAITER) &&

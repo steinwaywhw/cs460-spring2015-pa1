@@ -30,6 +30,10 @@ typedef struct
 	int			firstFreeBuffer;	/* Head of list of unused buffers */
 	int			lastFreeBuffer; /* Tail of list of unused buffers */
 
+	/* CS460: MRU list head, tail */
+	int			mruHead;
+	int 		mruTail;
+
 	/*
 	 * NOTE: lastFreeBuffer is undefined when firstFreeBuffer is -1 (that is,
 	 * when the list is empty)
@@ -45,6 +49,28 @@ typedef struct
 
 /* Pointers to shared state */
 static BufferStrategyControl *StrategyControl = NULL;
+
+/*
+ * CS460 Debug Information
+ */
+void ShowMRUList() 
+{
+	if (StrategyControl->mruHead == MRUNEXT_END_OF_LIST) 
+	{
+		printf("[EMPTY]\n");
+		return;
+	}
+	
+	BufferDesc *buf = BufferDescriptors + StrategyControl->mruHead;
+	
+	while (buf->mruNext != MRUNEXT_END_OF_LIST) 
+	{
+		printf ("[%2d]->", buf->buf_id);
+		buf = BufferDescriptors + buf->mruNext;
+	}
+
+	printf ("[%2d]\n", buf->buf_id);
+}
 
 /*
  * Private (non-shared) state for managing a ring of shared buffers to re-use.
@@ -84,6 +110,50 @@ typedef struct BufferAccessStrategyData
 static volatile BufferDesc *GetBufferFromRing(BufferAccessStrategy strategy);
 static void AddBufferToRing(BufferAccessStrategy strategy,
 				volatile BufferDesc *buf);
+/*
+ * CS460
+ *
+ * This will put a buffer into MRU list. This function should be only called by 
+ * unpinning a buffer. Since it is MRU, we always put at head position. This
+ * is consistent with StrategyGetBuffer where we pick also at head position.
+ * This is not the same as InvalidateBuffer where a buffer is surely not useful
+ * any more and should be put into free buffer instead.
+ */
+void StrategyMRUEnqueue(volatile BufferDesc *buf) 
+{
+	
+}
+
+
+/*
+ * CS460
+ */
+void StrategyMRUDequeue(volatile BufferDesc *buf)
+{
+	/* if it is already dequeued. this may happen if buf comes from free list */
+	if (buf->mruNext == MRU_NOT_IN_LIST) 
+	{
+		return;
+	}
+	
+	Assert(StrategyControl->mruHead != MRUNEXT_END_OF_LIST);
+		
+	/* unlink from prev */
+	if (buf->mruPrev == MRUPREV_HEAD_OF_LIST)
+		StrategyControl->mruHead = buf->mruNext;
+	else  
+		(BufferDescriptors + buf->mruPrev)->mruNext = buf->mruNext;
+		
+	/* unlink from next */	
+	if (buf->mruNext == MRUNEXT_END_OF_LIST)
+		StrategyControl->mruTail = buf->mruPrev;
+	else
+		(BufferDescriptors + buf->mruNext)->mruPrev = buf->mruPrev;
+		
+	buf->mruPrev = MRU_NOT_IN_LIST;
+	buf->mruNext = MRU_NOT_IN_LIST;
+}
+
 
 
 /*
@@ -170,7 +240,13 @@ StrategyGetBuffer(BufferAccessStrategy strategy, bool *lock_held)
 	trycounter = NBuffers;
 	for (;;)
 	{
-		buf = &BufferDescriptors[StrategyControl->nextVictimBuffer];
+		/* CS460: every time, it peaks the head when chosing victim, 
+		 * and later put back as head, thus "most recent". BTW, we are
+		 * only changing the policy for noremal case where strategy == NULL
+		 */
+		buf = strategy == NULL  
+				? &BufferDescriptors[StrategyControl->mruHead] 
+				: &BufferDescriptors[StrategyControl->nextVictimBuffer];
 
 		if (++StrategyControl->nextVictimBuffer >= NBuffers)
 		{
@@ -185,7 +261,15 @@ StrategyGetBuffer(BufferAccessStrategy strategy, bool *lock_held)
 		LockBufHdr(buf);
 		if (buf->refcount == 0)
 		{
-			if (buf->usage_count > 0)
+			// CS460: this part has changed
+			if (strategy == NULL) 
+			{
+				ShowAllBufferDesc(buf->buf_id);
+				printf(" ");
+				ShowMRUList();
+				return buf;
+			}
+			else if (buf->usage_count > 0)
 			{
 				buf->usage_count--;
 				trycounter = NBuffers;
@@ -196,13 +280,14 @@ StrategyGetBuffer(BufferAccessStrategy strategy, bool *lock_held)
 				if (strategy != NULL)
 					AddBufferToRing(strategy, buf);
 
-				ShowAllBufferDesc(buf->buf_id);
-				printf("\n");
 				return buf;
 			}
 		}
 		else if (--trycounter == 0)
 		{
+			// CS460: if it is pinned, we need dequeue
+			StrategyMRUDequeue(buf);
+
 			/*
 			 * We've scanned all the buffers without making any state changes,
 			 * so all the buffers are pinned (or were when we looked at them).
@@ -347,6 +432,11 @@ StrategyInitialize(bool init)
 		/* Clear statistics */
 		StrategyControl->completePasses = 0;
 		StrategyControl->numBufferAllocs = 0;
+
+		/* CS460: init MRU list to be empty */
+		StrategyControl->mruHead = MRUNEXT_END_OF_LIST;
+		StrategyControl->mruTail = MRUPREV_HEAD_OF_LIST;
+
 	}
 	else
 		Assert(!init);
