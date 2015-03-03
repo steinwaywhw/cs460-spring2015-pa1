@@ -22,8 +22,7 @@ fi
 source env.sh
 
 rm -f /tmp/query_results.log /tmp/query_results.log
-sudo rm -rf $PGDATA
-sudo su postgres -c ./init.sh 
+sudo su postgres -c ./reinit.sh
 sudo su postgres -c ./query.sh
 
 DATE=$(date +%T)

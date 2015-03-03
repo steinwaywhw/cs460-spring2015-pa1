@@ -48,65 +48,17 @@ source env.sh
 
 # ==================================
 echo "executing initdb"
+rm -rf $PGDATA
 initdb 
 echo "initdb successful"
-# echo "local all all trust" >> /var/lib/postgresql/data/pg_hba.conf
-
-# ==================================
-echo "starting postmaster"
-pg_ctl start 
-if [ "$?" != "0" ]
-then
-  echo "error while statring postgres server: pg_ctl start"
-  exit 1;
-fi
-echo "sleeping $SEC seconds while the postmaster brushes its teeth"
-sleep $SEC
-
-# ==================================
-echo "executing createdb"
-createdb $DBNAME 
-if [ "$?" != "0" ]
-then
-  echo "error while executing: createdb $DBNAME"
-  pg_ctl stop
-  exit 1;
-fi
-echo "createdb successful"
-
-# ==================================
-echo "executing commands from prepare.sql"
-cp R /tmp
-cp S /tmp
-psql -d $DBNAME -f prepare.sql
-rm -f /tmp/R /tmp/s
-if [ "$?" != "0" ]
-then
-  echo "error when executing psql $DBNAME -f prepare.sql"
-	echo "stopping postmaster"
-	pg_ctl stop
-	exit 1;
-fi
-echo "commands from prepare.sql executed successfully"
 
 # ==================================
 if [ $INDEX -eq 1 ]
-then
-	echo "executing commands from indexes.sql"
-	psql -d $DBNAME -f indexes.sql
-	if [ "$?" != "0" ]
-	then
-		echo "error when executing psql $DBNAME -f indexes.sql"
-		echo "stopping postmaster"
-		pg_ctl stop
-		exit 1;
-	fi
-	echo "Commands from indexes.sql executed successfully"
-fi
-
-# ==================================
-echo "stopping postmaster"
-pg_ctl stop
+then 
+	./reinit.sh index 
+else 
+	./reinit.sh 
+fi 
 
 # ==================================
 echo

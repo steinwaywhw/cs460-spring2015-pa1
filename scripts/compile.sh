@@ -15,7 +15,6 @@ source ./env.sh
 
 cd $1
 #sed -i 's/#define BLCKSZ\s*8192$/#define BLCKSZ 512/' ./src/include/pg_config.h.in  
-./configure --with-blocksize=1 
 sudo make uninstall
 make -j8 
 sudo make install

@@ -1,6 +1,7 @@
 
 SRCDIR = $(PWD)/postgresql
 
+
 all: 
 
 testclock:
@@ -11,12 +12,22 @@ testclock:
 	cp ./policy/buf_init.clock.c      $(SRCDIR)/src/backend/storage/buffer/buf_init.c
 	cp ./policy/buf_internals.clock.h $(SRCDIR)/src/include/storage/buf_internals.h
 
+	cd ./scripts && ./compile.sh $(SRCDIR) && ./test.sh clock $(PWD)/output
 
-	cd $(SRCDIR) && sudo make uninstall && make -j8 && sudo make install
-	cd ./scripts && ./test.sh clock $(PWD)/output
+	
+testmru: 
+	mkdir -p ./output
+
+	cp ./policy/freelist.mru.c      $(SRCDIR)/src/backend/storage/buffer/freelist.c
+	cp ./policy/bufmgr.mru.c        $(SRCDIR)/src/backend/storage/buffer/bufmgr.c
+	cp ./policy/buf_init.mru.c      $(SRCDIR)/src/backend/storage/buffer/buf_init.c
+	cp ./policy/buf_internals.mru.h $(SRCDIR)/src/include/storage/buf_internals.h
+
+	cd ./scripts && ./compile.sh $(SRCDIR) && ./test.sh mru $(PWD)/output
 
 setup:
+	rm -rf $(SRCDIR)
 	cd scripts && ./download.sh $(SRCDIR)
-	cd scripts && ./compile.sh $(SRCDIR)
+	cd scripts && ./configure --with-blocksize=1 && ./compile.sh $(SRCDIR)
+	cd ./scripts && sudo su postgres -c ./init.sh 
 
-	mkdir -p policy
