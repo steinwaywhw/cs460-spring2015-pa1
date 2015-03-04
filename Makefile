@@ -25,6 +25,18 @@ testmru:
 
 	cd ./scripts && ./compile.sh $(SRCDIR) && ./test.sh mru $(PWD)/output
 
+testlru: 
+	mkdir -p ./output
+
+	cp ./policy/freelist.lru.c      $(SRCDIR)/src/backend/storage/buffer/freelist.c
+	cp ./policy/bufmgr.lru.c        $(SRCDIR)/src/backend/storage/buffer/bufmgr.c
+	cp ./policy/buf_init.lru.c      $(SRCDIR)/src/backend/storage/buffer/buf_init.c
+	cp ./policy/buf_internals.lru.h $(SRCDIR)/src/include/storage/buf_internals.h
+
+	cd ./scripts && ./compile.sh $(SRCDIR) && ./test.sh lru $(PWD)/output
+
+
+
 setup:
 	rm -rf $(SRCDIR)
 	cd scripts && ./download.sh $(SRCDIR)
