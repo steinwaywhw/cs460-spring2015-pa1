@@ -28,6 +28,7 @@ testmru:
 setup:
 	rm -rf $(SRCDIR)
 	cd scripts && ./download.sh $(SRCDIR)
-	cd scripts && ./configure --with-blocksize=1 && ./compile.sh $(SRCDIR)
+	cd $(SRCDIR) && ./configure --with-blocksize=1 
+	cd scripts && ./compile.sh $(SRCDIR)
 	cd ./scripts && sudo su postgres -c ./init.sh 
 

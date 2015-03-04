@@ -121,7 +121,23 @@ static void AddBufferToRing(BufferAccessStrategy strategy,
  */
 void StrategyMRUEnqueue(volatile BufferDesc *buf) 
 {
+	if (buf->mruNext != MRU_NOT_IN_LIST) 
+	{
+		//printf("[THIS ALSO HAPPEND]\n");
+		return;
+	}
+
+	// link to prev
+	buf->mruPrev = MRUPREV_HEAD_OF_LIST;
 	
+	// link to next
+	buf->mruNext = StrategyControl->mruHead;
+	StrategyControl->mruHead = buf->buf_id;
+	if (buf->mruNext != MRUNEXT_END_OF_LIST) 
+	{
+		Assert((BufferDescriptors + buf->mruNext)->mruPrev == MRUPREV_HEAD_OF_LIST);
+		(BufferDescriptors + buf->mruNext)->mruPrev = buf->buf_id;
+	}
 }
 
 
