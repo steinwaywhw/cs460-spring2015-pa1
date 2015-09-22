@@ -37,7 +37,7 @@ if [ "$#" == 1 ]
 then
 	if [ "$1" != "index" ]
 	then
-  	  	help
+  	  help
 	  	exit 1
 	fi
 	INDEX=1
@@ -85,7 +85,7 @@ fi
 echo "commands from prepare.sql executed successfully"
 
 # ==================================
-if [ $INDEX -eq 1 ]
+if [ $INDEX == 1 ]
 then
 	echo "executing commands from indexes.sql"
 	psql -d $DBNAME -f indexes.sql

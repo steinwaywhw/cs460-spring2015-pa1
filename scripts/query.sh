@@ -1,13 +1,14 @@
 #!/bin/bash
 
-if [ "$#" -eq 0 ]
+if [ "$#" -eq "0" ]
 then
 	echo "Assuming number of buffers = 16"
-	NBUFFERS=16;
+	NBUFFERS=16
 else
-	NBUFFERS=$1;
-	echo "Input number of buffers = "$NBUFFERS;
+	NBUFFERS=$1
+	echo "Input number of buffers = "$NBUFFERS
 fi
+
 
 source env.sh
 
